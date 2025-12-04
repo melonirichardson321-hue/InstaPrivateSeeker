@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaSeeker - Private Profile Viewer</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ig-blue: #405de6;
+            --ig-purple: #5851db;
+            --ig-pink: #833ab4;
+            --ig-red: #c13584;
+            --ig-orange: #e1306c;
+            --ig-yellow: #fd1d1d;
+            --gradient: linear-gradient(45deg, #405de6, #833ab4, #e1306c);
+            --dark-bg: #000000;
+            --card-bg: #121212;
+            --card-border: #262626;
+            --text-primary: #ffffff;
+            --text-secondary: #a8a8a8;
+            --hover-color: #262626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .premium-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .premium-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 48, 108, 0.3);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Search Box */
+        .search-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 24px;
+            padding-right: 140px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--card-border);
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--ig-orange);
+            box-shadow: 0 0 0 2px rgba(225, 48, 108, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .search-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(225, 48, 108, 0.1);
+            border: 1px solid rgba(225, 48, 108, 0.3);
+            color: #ff6b8b;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .loader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--ig-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-circle:nth-child(2) {
+            border-top: 3px solid var(--ig-blue);
+            animation-delay: 0.3s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Profile Display */
+        .profile-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid transparent;
+            background: var(--gradient) border-box;
+            padding: 3px;
+        }
+
+        .profile-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .username {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-bio {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .private-badge {
+            display: inline-block;
+            background: var(--ig-orange);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--hover-color);
+            border-color: var(--ig-orange);
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Content Display */
+        .content-container {
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: var(--ig-orange);
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .media-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .media-item:hover {
+            transform: scale(1.02);
+        }
+
+        .media-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .media-info {
+            padding: 1rem;
+        }
+
+        .media-caption {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .media-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Premium Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plan-card:hover {
+            border-color: var(--ig-orange);
+            transform: translateY(-3px);
+        }
+
+        .plan-card.selected {
+            border-color: var(--ig-orange);
+            background: rgba(225, 48, 108, 0.1);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(225, 48, 108, 0.1);
+            border-radius: 12px;
+            color: var(--ig-orange);
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--card-border);
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .media-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .search-container {
+                padding: 1.5rem;
+            }
+            
+            .search-input {
+                padding: 15px 20px;
+                padding-right: 100px;
+            }
+            
+            .search-btn {
+                padding: 10px 20px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--ig-orange);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--ig-red);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-search"></i>
+                InstaSeeker
+            </div>
+            <button class="premium-btn" onclick="openPremiumModal()">
+                <i class="fas fa-crown"></i>
+                Premium
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>View Private Instagram Profiles</h1>
+            <p>Access private profiles, stories, highlights and posts without following. Simple, fast and secure.</p>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" id="usernameInput" 
+                       placeholder="Enter Instagram username (without @)" autocomplete="off">
+                <button class="search-btn" onclick="searchProfile()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <p class="search-hint">
+                <i class="fas fa-info-circle"></i>
+                Works for both public and private profiles
+            </p>
+            <div class="error-message" id="errorMessage"></div>
+        </section>
+
+        <!-- Loading -->
+        <div class="loading-container" id="loading">
+            <div class="loader">
+                <div class="loader-circle"></div>
+                <div class="loader-circle"></div>
+            </div>
+            <p>Scanning profile...</p>
+        </div>
+
+        <!-- Profile Display -->
+        <div class="profile-container" id="profileContainer">
+            <!-- Profile will be loaded here -->
+        </div>
+
+        <!-- Content Display -->
+        <div class="content-container" id="contentContainer">
+            <!-- Content will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Premium Modal -->
+    <div class="modal" id="premiumModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePremiumModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="margin-bottom: 1rem; text-align: center;">
+                <i class="fas fa-crown" style="color: #e1306c;"></i> Upgrade to Premium
+            </h2>
+            <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1.5rem;">
+                Unlock all features and access private content
+            </p>
+            
+            <div class="plan-card" onclick="selectPlan('monthly')">
+                <h3 style="margin-bottom: 0.5rem;">Monthly Plan</h3>
+                <p style="font-size: 1.5rem; color: var(--ig-orange); margin-bottom: 0.5rem;">₹299/month</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Full access to all features
+                </p>
+            </div>
+            
+            <div class="plan-card" onclick="selectPlan('quarterly')">
+                <h3 style="margin-bottom: 0.5rem;">3-Month Plan</h3>
+                <p style="font-size: 1.5rem; color: var(--ig-orange); margin-bottom: 0.5rem;">₹199/month</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Save 33% - Billed as ₹597 every 3 months
+                </p>
+            </div>
+            
+            <div class="plan-card" onclick="selectPlan('yearly')">
+                <h3 style="margin-bottom: 0.5rem;">Yearly Plan</h3>
+                <p style="font-size: 1.5rem; color: var(--ig-orange); margin-bottom: 0.5rem;">₹99/month</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Save 67% - Billed as ₹1188 yearly
+                </p>
+            </div>
+            
+            <div class="coming-soon">
+                <i class="fas fa-bolt"></i>
+                Payment gateway coming soon!
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 InstaSeeker. For educational purposes only.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            <i class="fas fa-lock"></i> Your privacy is protected
+        </p>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentProfile = null;
+        let selectedPlan = null;
+
+        // Search profile function
+        async function searchProfile() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            const loadingDiv = document.getElementById('loading');
+            const profileDiv = document.getElementById('profileContainer');
+            const contentDiv = document.getElementById('contentContainer');
+            
+            // Reset display
+            errorDiv.style.display = 'none';
+            profileDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
+            
+            if (!username) {
+                showError('Please enter Instagram username');
+                return;
+            }
+            
+            // Show loading
+            loadingDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentProfile = data.data;
+                    displayProfile(currentProfile);
+                } else {
+                    showError(data.error || 'Profile not found');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Search error:', error);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Display profile information
+        function displayProfile(profile) {
+            const container = document.getElementById('profileContainer');
+            
+            const profileHtml = `
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img src="${profile.profile_pic || 'https://via.placeholder.com/120?text=IG'}" 
+                             alt="Profile" 
+                             class="profile-pic"
+                             onerror="this.src='https://via.placeholder.com/120?text=IG'">
+                        
+                        <div class="profile-info">
+                            <h2>${profile.full_name || profile.username}</h2>
+                            <p class="username">@${profile.username}</p>
+                            <p class="profile-bio">${profile.bio || 'No bio available'}</p>
+                            
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <span class="stat-number">${profile.posts_count?.toLocaleString() || '0'}</span>
+                                    <span class="stat-label">Posts</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">${profile.followers?.toLocaleString() || '0'}</span>
+                                    <span class="stat-label">Followers</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">${profile.following?.toLocaleString() || '0'}</span>
+                                    <span class="stat-label">Following</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="showContent('posts')">
+                            <i class="fas fa-images"></i>
+                            View Posts
+                        </button>
+                        <button class="action-btn" onclick="showContent('reels')">
+                            <i class="fas fa-film"></i>
+                            View Reels
+                        </button>
+                        <button class="action-btn" onclick="showContent('highlights')">
+                            <i class="fas fa-star"></i>
+                            View Highlights
+                        </button>
+                        <button class="action-btn" onclick="showContent('stories')">
+                            <i class="fas fa-history"></i>
+                            View Stories
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = profileHtml;
+            container.style.display = 'block';
+            
+            // Scroll to profile
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Show content (posts, reels, etc.)
+        function showContent(type) {
+            const container = document.getElementById('contentContainer');
+            
+            let title = '';
+            let content = '';
+            
+            switch(type) {
+                case 'posts':
+                    title = 'Recent Posts';
+                    content = getPostsContent();
+                    break;
+                case 'reels':
+                    title = 'Reels';
+                    content = getReelsContent();
+                    break;
+                case 'highlights':
+                    title = 'Highlights';
+                    content = getHighlightsContent();
+                    break;
+                case 'stories':
+                    title = 'Stories';
+                    content = getStoriesContent();
+                    break;
+            }
+            
+            const contentHtml = `
+                <div class="profile-card">
+                    <div class="content-header">
+                        <h3>${title}</h3>
+                        <button class="close-btn" onclick="closeContent()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    ${content}
+                </div>
+            `;
+            
+            container.innerHTML = contentHtml;
+            container.style.display = 'block';
+        }
+
+        // Get posts content
+        function getPostsContent() {
+            if (!currentProfile || !currentProfile.posts) {
+                return '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No posts available</p>';
+            }
+            
+            const posts = currentProfile.posts.filter(p => p.type === 'POST');
+            
+            if (posts.length === 0) {
+                return '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No posts available</p>';
+            }
+            
+            let html = '<div class="media-grid">';
+            
+            posts.slice(0, 6).forEach(post => {
+                html += `
+                    <div class="media-item">
+                        <img src="${post.thumbnail}" 
+                             alt="Post" 
+                             class="media-preview"
+                             onerror="this.src='https://via.placeholder.com/300?text=Post'">
+                        <div class="media-info">
+                            <p class="media-caption">${post.caption || 'No caption'}</p>
+                            <div class="media-stats">
+                                <span><i class="fas fa-heart"></i> ${post.likes || 0}</span>
+                                <span><i class="fas fa-comment"></i> ${post.comments || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Get reels content
+        function getReelsContent() {
+            if (!currentProfile || !currentProfile.posts) {
+                return '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No reels available</p>';
+            }
+            
+            const reels = currentProfile.posts.filter(p => p.type === 'REELS');
+            
+            if (reels.length === 0) {
+                return '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No reels available</p>';
+            }
+            
+            let html = '<div class="media-grid">';
+            
+            reels.slice(0, 6).forEach(reel => {
+                const isVideo = reel.is_video || reel.video_url;
+                const media = isVideo ? 
+                    `<video src="${reel.video_url || reel.thumbnail}" 
+                            class="media-preview" 
+                            controls 
+                            poster="${reel.thumbnail}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                     <img src="${reel.thumbnail}" 
+                          alt="Reel" 
+                          style="display:none; width:100%; height:200px; object-fit:cover;"
+                          onerror="this.src='https://via.placeholder.com/300?text=Reel'">
+                    </video>` :
+                    `<img src="${reel.thumbnail}" 
+                          alt="Reel" 
+                          class="media-preview"
+                          onerror="this.src='https://via.placeholder.com/300?text=Reel'">`;
+                
+                html += `
+                    <div class="media-item">
+                        ${media}
+                        <div class="media-info">
+                            <p class="media-caption">${reel.caption || 'No caption'}</p>
+                            <div class="media-stats">
+                                <span><i class="fas fa-heart"></i> ${reel.likes || 0}</span>
+                                <span><i class="fas fa-comment"></i> ${reel.comments || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Get highlights content
+        function getHighlightsContent() {
+            return `
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-lock" style="font-size: 3rem; color: var(--ig-orange); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 1rem;">Highlights require premium access</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Upgrade to premium to view highlights
+                    </p>
+                    <button class="premium-btn" onclick="openPremiumModal()">
+                        <i class="fas fa-crown"></i>
+                        Upgrade Now
+                    </button>
+                </div>
+            `;
+        }
+
+        // Get stories content
+        function getStoriesContent() {
+            return `
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-eye-slash" style="font-size: 3rem; color: var(--ig-orange); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 1rem;">Stories viewing requires premium</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Get premium to access stories and all features
+                    </p>
+                    <button class="premium-btn" onclick="openPremiumModal()">
+                        <i class="fas fa-crown"></i>
+                        Get Premium
+                    </button>
+                </div>
+            `;
+        }
+
+        // Close content view
+        function closeContent() {
+            document.getElementById('contentContainer').style.display = 'none';
+        }
+
+        // Premium modal functions
+        function openPremiumModal() {
+            document.getElementById('premiumModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePremiumModal() {
+            document.getElementById('premiumModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            selectedPlan = null;
+            resetPlanCards();
+        }
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            resetPlanCards();
+            event.currentTarget.classList.add('selected');
+        }
+
+        function resetPlanCards() {
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProfile();
+            }
+        });
+
+        document.getElementById('premiumModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePremiumModal();
+            }
+        });
+
+        // Initialize
+        document.getElementById('usernameInput').focus();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePremiumModal();
+                closeContent();
+            }
+        });
+
+        // Sample data for testing (remove in production)
+        window.testProfile = {
+            username: "testuser",
+            full_name: "Test User",
+            bio: "This is a test bio for demonstration purposes.",
+            profile_pic: "https://via.placeholder.com/120",
+            posts_count: 156,
+            followers: 25400,
+            following: 345,
+            posts: [
+                {
+                    type: "POST",
+                    thumbnail: "https://via.placeholder.com/300x200",
+                    caption: "Beautiful sunset view from my window",
+                    likes: 2450,
+                    comments: 156,
+                    is_video: false
+                },
+                {
+                    type: "REELS",
+                    thumbnail: "https://via.placeholder.com/300x200/833ab4/ffffff",
+                    caption: "Morning workout routine",
+                    likes: 1890,
+                    comments: 89,
+                    is_video: true
+                },
+                {
+                    type: "POST",
+                    thumbnail: "https://via.placeholder.com/300x200/e1306c/ffffff",
+                    caption: "Coffee and coding",
+                    likes: 1200,
+                    comments: 45,
+                    is_video: false
+                }
+            ]
+        };
+    </script>
+</body>
+</html>
