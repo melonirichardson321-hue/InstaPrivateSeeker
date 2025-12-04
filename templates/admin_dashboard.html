@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard | INSTA SEEKER</title>
+    <style>
+        body {
+            background: #0f0f0f;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e1306c;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            color: #a8a8a8;
+            margin: 0;
+            font-size: 14px;
+        }
+        .stat-card p {
+            font-size: 24px;
+            margin: 10px 0 0 0;
+            color: #e1306c;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background: #2d2d2d;
+            color: #e1306c;
+        }
+        .private-badge {
+            background: #e1306c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        .logout-btn {
+            background: #e1306c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Admin Dashboard</h1>
+        <p>INSTA SEEKER Search Analytics</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Total Searches</h3>
+            <p>{{ total_searches }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Unique Users</h3>
+            <p>{{ unique_ips }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Today's Searches</h3>
+            <p>{{ today_searches }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Private Profiles</h3>
+            <p>{{ private_searches }}</p>
+        </div>
+    </div>
+    
+    <h2>Recent Search History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>IP Address</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for search in searches %}
+            <tr>
+                <td>@{{ search.username }}</td>
+                <td>{{ search.ip_address }}</td>
+                <td>{{ search.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                    {% if search.is_private %}
+                    <span class="private-badge">PRIVATE</span>
+                    {% else %}
+                    <span style="color: #00c851;">PUBLIC</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="/admin/logout">
+        <button class="logout-btn">Logout</button>
+    </a>
+</body>
+</html>
